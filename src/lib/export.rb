@@ -1,4 +1,4 @@
-## BackupChatViewer-hangouts -- A Google Takeout Hangout.json parser for BackupChatViewer
+## BackupChatViewer-messenger -- A Google Takeout Hangout.json parser for BackupChatViewer
 ## Copyright (C) 2015 Alexander Scheel <alexander.m.scheel@gmail.com>
 
 require 'set'
@@ -10,7 +10,7 @@ require 'digest'
 module Messenger
     class Export
         def initialize()
-            @options = Hangouts.options()
+            @options = Messenger.options()
             if File.exists?(@options.inpath)
                 puts "Reading file into HTML object in memory..."
                 temporary = File.open(@options.inpath)

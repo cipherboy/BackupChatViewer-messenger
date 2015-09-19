@@ -1,4 +1,4 @@
-## BackupChatViewer-hangouts -- A Google Takeout Hangout.json parser for BackupChatViewer
+## BackupChatViewer-messenger -- A Google Takeout Hangout.json parser for BackupChatViewer
 ## Copyright (C) 2015 Alexander Scheel <alexander.m.scheel@gmail.com>
 
 require 'optparse'
