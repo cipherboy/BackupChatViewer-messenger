@@ -42,7 +42,7 @@ module Messenger
             @data.css('div.thread').each do |thread|
                 tusers = Set.new
                 thread.each('span.user') do |user|
-                    u = {name: user.text, chat_id: Digest::MD5.hexdigest user.text.downcase, gaia_id: Digest::MD5.hexdigest user.text.downcase}
+                    u = { name: user.text, chat_id: Digest::MD5.hexdigest(user.text.downcase), gaia_id: Digest::MD5.hexdigest(user.text.downcase) }
                     users.add(u)
                     tusers.add(u)
                 end
