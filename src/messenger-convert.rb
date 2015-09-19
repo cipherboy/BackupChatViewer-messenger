@@ -41,5 +41,5 @@ module Messenger
 end
 
 if __FILE__ == $0
-    Hangouts.start()
+    Messenger.start()
 end

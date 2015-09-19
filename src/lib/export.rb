@@ -41,7 +41,7 @@ module Messenger
             users = Set.new
             @data.css('div.thread').each do |thread|
                 tusers = Set.new
-                thread.each('span.user') do |user|
+                thread.css('span.user').each do |user|
                     u = { name: user.text, chat_id: Digest::MD5.hexdigest(user.text.downcase), gaia_id: Digest::MD5.hexdigest(user.text.downcase) }
                     users.add(u)
                     tusers.add(u)
@@ -50,7 +50,7 @@ module Messenger
                 people_id = []
 
                 tusers.each do |tuser|
-                    people_id.push tuser.chat_id
+                    people_id.push tuser[:chat_id]
                 end
 
                 convs.add({conv_id: conv_id, people_id: people_id.join(':')})
@@ -61,7 +61,7 @@ module Messenger
             conv_file = File.new(@options.outdir + '/conversations.csv', 'w')
             conv_file.write "conv_id,people_ids" + "\n"
             convs.each do |conv|
-                conv_file.write '"' +conv[:conv_id] + '","' + conv[:people_ids] + '"' + "\n"
+                conv_file.write '"' + conv[:conv_id] + '","' + conv[:people_id] + '"' + "\n"
             end
             conv_file.close()
 
