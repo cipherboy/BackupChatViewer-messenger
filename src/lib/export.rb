@@ -4,8 +4,9 @@
 require 'set'
 require 'nokogiri'
 require 'fileutils'
-require 'date'
+require 'time'
 require 'digest'
+require 'securerandom'
 
 module Messenger
     class Export
@@ -39,6 +40,11 @@ module Messenger
             puts "Parsing for conversations, users"
             convs = Set.new
             users = Set.new
+
+            puts "Writing messages.csv"
+            # conv_id,event_id,sender_id,message_id,segment_id,message_time,segment_type,segment_content
+            messages_file = File.new(@options.outdir + '/messages.csv', 'w')
+            messages_file.write "conv_id,event_id,sender_id,message_id,segment_id,message_time,segment_type,segment_content" + "\n"
             @data.css('div.thread').each do |thread|
                 tusers = Set.new
                 thread.each('span.user') do |user|
@@ -53,8 +59,21 @@ module Messenger
                     people_id.push tuser.chat_id
                 end
 
+                thread.css('div.message').each_with_index do |div, index|
+                    event_id = SecureRandom.uuid
+                    sender_id = Digest::MD5.hexdigest(div.css('span.user').text.downcase)
+                    message_id = index
+                    segment_id = 0
+                    message_time = facebook_to_date(div.css('span.meta'))
+                    segment_type = "TEXT"
+                    segment_content = div.next_sibling.text
+
+                    messages_file.write '"' + conv_id.to_s + '","' + event_id.to_s + '","' + sender_id.to_s + '","' + message_id.to_s + '","' + segment_id.to_s + '","' + message_time.to_s + '","' + segment_type.to_s + '","' + segment_content.to_s.gsub('"', '""') + '"' + "\n"
+                end
+
                 convs.add({conv_id: conv_id, people_id: people_id.join(':')})
             end
+            messages_file.close()
 
             puts "Writing conversations.csv"
             # conv_id,people_ids
@@ -74,19 +93,15 @@ module Messenger
                 people_file.write '"' + person[:chat_id] + '","' + person[:gaia_id] + '","' + person[:name] + '"' + "\n"
             end
             people_file.close()
-
-            puts "Writing messages.csv"
-            # conv_id,event_id,sender_id,message_id,segment_id,message_time,segment_type,segment_content
-            messages_file = File.new(@options.outdir + '/messages.csv', 'w')
-            messages_file.write "conv_id,event_id,sender_id,message_id,segment_id,message_time,segment_type,segment_content" + "\n"
-
-            messages_file.write '"' + conv_id.to_s + '","' + event_id.to_s + '","' + sender_id.to_s + '","' + message_id.to_s + '","' + segment_id.to_s + '","' + message_time.to_s + '","' + segment_type.to_s + '","' + segment_content.to_s.gsub('"', '""') + '"' + "\n"
-
-            messages_file.close()
         end
 
         def export_dry()
         end
+
+        def facebook_to_date(input)
+            return Time.Parse(input).strftime('%Y-%m-%d %H:%M:%S')
+        end
+
 
         def close()
         end
