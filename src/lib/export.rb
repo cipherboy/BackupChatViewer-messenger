@@ -64,7 +64,7 @@ module Messenger
                     sender_id = Digest::MD5.hexdigest(div.css('span.user').text.downcase)
                     message_id = index
                     segment_id = 0
-                    message_time = facebook_to_date(div.css('span.meta'))
+                    message_time = facebook_to_date(div.css('span.meta').text)
                     segment_type = "TEXT"
                     segment_content = div.next_sibling.text
 
@@ -99,7 +99,7 @@ module Messenger
         end
 
         def facebook_to_date(input)
-            return Time.Parse(input).strftime('%Y-%m-%d %H:%M:%S')
+            return Time.parse(input).strftime('%Y-%m-%d %H:%M:%S')
         end
 
 
